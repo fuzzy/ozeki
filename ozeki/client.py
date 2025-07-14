@@ -61,11 +61,14 @@ class SumoAPI:
 
     def basho(self, basho_id):
         return self._cache(
-            f"{self.CACHE_DIR}/basho/{basho_id}.json", f"/basho/{basho_id}"
+            f"{self.CACHE_DIR}/basho_{basho_id}.json", f"/basho/{basho_id}"
         )
 
     def banzuke(self, basho_id, division):
-        return self._get(f"/basho/{basho_id}/banzuke/{division}")
+        return self._cache(
+            f"{self.CACHE_DIR}/basho/{basho_id}/banzuke_{division}.json",
+            f"/basho/{basho_id}/banzuke/{division}",
+        )
 
     def torikumi(self, basho_id, division, day):
         try:
