@@ -1,0 +1,54 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ozeki"
+version = "0.1.0"
+description = "Terminal-based data browser for sumo-api.com"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+authors = [
+  { name = "Mike 'Fuzzy' Partin", email = "fuzzy@thwap.org" }
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Bug Tracking"
+]
+
+dependencies = [
+  "textual",
+  "rich"
+]
+
+[project.scripts]
+ozeki = "ozeki:main"
+
+[tool.setuptools]
+packages = ["ozeki"]
+
+[tool.setuptools.package-data]
+"*" = ["*.md", "*.css"]
+
+[tool.flake8]
+max-line-length = 100
+ignore = [
+  "E203",
+  "W503"
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.coverage.run]
+branch = true
+source = ["ozeki"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
