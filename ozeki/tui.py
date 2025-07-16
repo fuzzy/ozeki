@@ -17,7 +17,7 @@ class SumoApp(App):
 
     CSS = """
 Horizontal { background: $surface; }
-Vertical { background: $surface; }
+Vertical { background: $surface; width: 20; }
 ListView { padding: 1; }
 /* Container */
 VerticalScroll { 
@@ -153,6 +153,7 @@ VerticalScroll {
         banzuke = self.query_one(BanzukeWidget)
 
         banzuke.init_d = ""
+        banzuke.ydata = self.sumo.basho(basho)
         banzuke.data = self.sumo.banzuke(basho, divi)
         torikumi = []
         for n in range(1, 16):
