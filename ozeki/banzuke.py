@@ -28,10 +28,11 @@ class BanzukeWidget(Widget):
 
 [yellow]Support[/yellow] ozeki by supporting [cyan][link=https://ko-fi.com/sumoapi]sumo-api.com (click here to open)[/link][/cyan].
 They provide this data anonymously, and [bold]free[/bold] of charge to you
-or I. Supporting them is to support Ozeki.
+and I. Supporting them is to support Ozeki.
 """
     )
     data = reactive({})
+    ydata = reactive({})
     tdata = reactive([])
     can_focus = True
 
@@ -57,11 +58,19 @@ or I. Supporting them is to support Ozeki.
     def get_content_height(
         self, container: Size, viewport: Size, console: Console
     ) -> int:
-        retv = self.init_d.count("\n") + 1  # Count lines in initial message
+        retv = self.init_d.count("\n") + 2  # Count lines in initial message
+
+        if self.ydata != {}:
+            retv += 4
 
         if self.data.get("east", []):
             retv += 5
             retv += len(self.data["east"])
+
+        if len(self.ydata.get("yusho", [])) > 0:
+            retv += 11
+            for n in self.ydata.get("specialPrizes", []):
+                retv += 1
 
         for n in self.tdata:
             if len(n.get("torikumi", [])) > 0 and n["torikumi"][0].get("day", 0) > 0:
@@ -75,9 +84,24 @@ or I. Supporting them is to support Ozeki.
     def render(self) -> None:
         widgets = []
 
+        # Our default display / splash screen
         if len(self.init_d) > 0 and len(self.data.get("east", [])) == 0:
             widgets.append(Panel(self.init_d, box=box.SIMPLE, expand=False, padding=1))
 
+        # Basho information display
+        if self.ydata != {}:
+            widgets.append(
+                Panel(
+                    Group(
+                        f"[yellow]Start Date[/yellow] [bold]{self.ydata.get('startDate', 'Unknown')}[/bold]",
+                        f"[yellow]End Date[/yellow]   [bold]{self.ydata.get('endDate', 'Unknown')}[/bold]",
+                    ),
+                    box=box.SIMPLE,
+                    expand=True,
+                )
+            )
+
+        # Primary banzuke display
         if len(self.data.get("east", [])) > 0:
             self.table = Table(
                 title="Banzuke",
@@ -141,6 +165,34 @@ or I. Supporting them is to support Ozeki.
                 )
             widgets.append(self.table)
 
+        # yusho and special prizes display
+        if len(self.ydata.get("yusho", [])) > 0:
+            tbl = Table(
+                title="Yusho and Special Prizes",
+                box=box.SIMPLE,
+                expand=True,
+                title_justify="full",
+                show_header=True,
+            )
+            for c in ("Shikona (EN)", "Shikona (JP)", "Yusho", "Special Prizes"):
+                tbl.add_column(c, justify="left")
+            for y in self.ydata.get("yusho", []):
+                tbl.add_row(
+                    y.get("shikonaEn", "UNKNOWN"),
+                    y.get("shikonaJp", "UNKNOWN"),
+                    "[green]" + y.get("type", "UNKNOWN") + "[/green]",
+                    "",
+                )
+            for p in self.ydata.get("specialPrizes", []):
+                tbl.add_row(
+                    p.get("shikonaEn", "UNKNOWN"),
+                    p.get("shikonaJp", "UNKNOWN"),
+                    "",
+                    "[cyan]" + p.get("type", "UNKNOWN") + "[/cyan]",
+                )
+            widgets.append(tbl)
+
+        # torikumi displays
         if len(self.tdata) > 0:
             for tdatum in self.tdata:
                 if (
@@ -175,49 +227,27 @@ or I. Supporting them is to support Ozeki.
                         idx += 1
 
                     for n in tdatum.get("torikumi", []):
-                        east = (
-                            f"[green]{n.get('eastShikona', 'UNKNOWN')}[/green]"
-                            if n.get("winnerId", True) == n.get("eastId", False)
-                            else f"[red]{n.get('eastShikona', 'UNKNONW')}[/red]"
-                        )
-                        west = (
-                            f"[green]{n.get('westShikona', 'UNKNOWN')}[/green]"
-                            if n.get("winnerId", True) == n.get("westId", False)
-                            else f"[red]{n.get('westShikona', 'UNKNONW')}[/red]"
-                        )
+                        eflag = wflag = ""
+                        if n.get("winnerId", True) == n.get("eastId", False):
+                            east = f"[green]{n.get('eastShikona', 'UNKNOWN')}[/green]"
+                            west = f"[red]{n.get('westShikona', 'UNKNOWN')}[/red]"
+                            eflag = "🏅"
+                        else:
+                            east = f"[red]{n.get('eastShikona', 'UNKNONW')}[/red]"
+                            west = f"[green]{n.get('westShikona', 'UNKNOWN')}[/green]"
+                            wflag = "🏅"
+
                         day.add_row(
-                            "",
+                            eflag,
                             east,
                             " ".join(n.get("eastRank", "UNKNOWN").split()[0:2]),
                             n.get("kimarite", "UNKNOWN"),
                             " ".join(n.get("westRank", "UNKNOWN").split()[0:2]),
                             west,
-                            "",
+                            wflag,
                         )
 
                     widgets.append(day)
 
         self.refresh(layout=True)
         return Group(*widgets)
-
-
-class TestBanzukeWidgetApp(App):
-
-    banzuke = BanzukeWidget()
-    sumo = SumoAPI()
-    BINDINGS = [("ctrl+q", "quit", "Quit"), ("ctrl+d", "change_data", "Change data")]
-
-    def compose(self) -> ComposeResult:
-        yield self.banzuke
-        yield Footer()
-
-    def on_mount(self):
-        self.banzuke.data = self.sumo.banzuke("202507", "Makuuchi")
-
-    def action_change_data(self):
-        self.banzuke.data = self.sumo.banzuke("202505", "Makuuchi")
-
-
-if __name__ == "__main__":
-    obj = TestBanzukeWidgetApp()
-    obj.run()
