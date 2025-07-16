@@ -1,6 +1,6 @@
 # Ozeki
 
-[![asciicast](https://asciinema.org/a/GnJH0Ge8eLM4lua50xvXQalqs.svg)](https://asciinema.org/a/GnJH0Ge8eLM4lua50xvXQalqs)
+[![asciicast](https://asciinema.org/a/c6FqgOEok3fWlEyL6JwmTfvoh.svg)](https://asciinema.org/a/c6FqgOEok3fWlEyL6JwmTfvoh)
 
 ## Installation
 
