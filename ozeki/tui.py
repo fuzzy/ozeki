@@ -6,7 +6,7 @@ from textual.theme import Theme
 from textual.app import App, ComposeResult
 from textual.widgets import ListView, ListItem, Label
 from textual.widgets import Footer
-from textual.containers import Horizontal, Vertical
+from textual.containers import Horizontal, Vertical, VerticalScroll
 
 # Internal
 from .client import SumoAPI
@@ -19,12 +19,21 @@ class SumoApp(App):
 Horizontal { background: $surface; }
 Vertical { background: $surface; }
 ListView { padding: 1; }
+/* Container */
+VerticalScroll { 
+    width: 5fr; 
+    overflow: auto;
+    background: $surface; 
+    overflow: auto;  /* Better than separate x/y */
+}
+
+/* Widget */
 #banzuke {
-    height: 1fr;
-    width: 5fr;
-    overflow: scroll;
-    content-align: center top;
+    width: auto;  /* Let content determine width */
+    min-width: 100%;  /* Ensure it fills container */
+    content-align: center middle;
     background: $surface;
+    height: auto;  /* Important for scrolling */
 }
 """
     BINDINGS = [
@@ -133,14 +142,19 @@ ListView { padding: 1; }
                 yield ListView(
                     *[ListItem(Label(n), id=n) for n in self.divisions], id="divisions"
                 )
-            yield BanzukeWidget(id="banzuke")
+            yield VerticalScroll(BanzukeWidget(id="banzuke"))
             yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
         w_basho = self.query_one("#bashos")
         w_divi = self.query_one("#divisions")
-
         basho = w_basho.children[w_basho.index].id.split("_")[1]
         divi = w_divi.children[w_divi.index].id
+        banzuke = self.query_one(BanzukeWidget)
 
-        self.query_one(BanzukeWidget).data = self.sumo.banzuke(basho, divi)
+        banzuke.init_d = ""
+        banzuke.data = self.sumo.banzuke(basho, divi)
+        torikumi = []
+        for n in range(1, 16):
+            torikumi.append(self.sumo.torikumi(basho, divi, n))
+        banzuke.tdata = torikumi
