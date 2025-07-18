@@ -10,7 +10,9 @@ from textual.containers import Horizontal, Vertical, VerticalScroll
 
 # Internal
 from .client import SumoAPI
+from .basho import BashoWidget
 from .banzuke import BanzukeWidget
+from .torikumi import TorikumiWidget
 
 
 class SumoApp(App):
@@ -28,10 +30,27 @@ VerticalScroll {
 }
 
 /* Widget */
-#banzuke {
+#basho {
+    padding-left: 1;
     width: auto;  /* Let content determine width */
     min-width: 100%;  /* Ensure it fills container */
-    content-align: center middle;
+    content-align: center top;
+    background: $surface;
+    height: auto;  /* Important for scrolling */
+}
+#banzuke {
+    padding-left: 1;
+    width: auto;  /* Let content determine width */
+    min-width: 100%;  /* Ensure it fills container */
+    content-align: center top;
+    background: $surface;
+    height: auto;  /* Important for scrolling */
+}
+#torikumi {
+    padding-left: 1;
+    width: auto;  /* Let content determine width */
+    min-width: 100%;  /* Ensure it fills container */
+    content-align: center top;
     background: $surface;
     height: auto;  /* Important for scrolling */
 }
@@ -142,7 +161,11 @@ VerticalScroll {
                 yield ListView(
                     *[ListItem(Label(n), id=n) for n in self.divisions], id="divisions"
                 )
-            yield VerticalScroll(BanzukeWidget(id="banzuke"))
+            yield VerticalScroll(
+                BashoWidget(id="basho"),
+                BanzukeWidget(id="banzuke"),
+                TorikumiWidget(id="torikumi"),
+            )
             yield Footer()
 
     def on_list_view_selected(self, event: ListView.Selected) -> None:
@@ -150,12 +173,14 @@ VerticalScroll {
         w_divi = self.query_one("#divisions")
         basho = w_basho.children[w_basho.index].id.split("_")[1]
         divi = w_divi.children[w_divi.index].id
-        banzuke = self.query_one(BanzukeWidget)
+        basho_w = self.query_one(BashoWidget)
+        banzuke_w = self.query_one(BanzukeWidget)
+        torikumi_w = self.query_one(TorikumiWidget)
 
-        banzuke.init_d = ""
-        banzuke.ydata = self.sumo.basho(basho)
-        banzuke.data = self.sumo.banzuke(basho, divi)
+        banzuke_w.init_d = ""
+        basho_w.ydata = self.sumo.basho(basho)
+        banzuke_w.data = self.sumo.banzuke(basho, divi)
         torikumi = []
         for n in range(1, 16):
             torikumi.append(self.sumo.torikumi(basho, divi, n))
-        banzuke.tdata = torikumi
+        torikumi_w.tdata = torikumi

@@ -1,6 +1,3 @@
-# stdlib
-import os
-
 # 3rd party imports
 from rich.table import Table
 from rich.panel import Panel

@@ -1,4 +1,5 @@
-from rich.box import box
+# 3rd party
+from rich import box
 from rich.table import Table
 
 from rich.console import Group

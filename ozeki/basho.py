@@ -1,19 +1,11 @@
 # 3rd party
-from rich.box import box
+from rich import box
 from rich.panel import Panel
 from rich.table import Table
 from rich.console import Group
 
-from textual.app import ComposeResult
 from textual.widget import Widget
 from textual.reactive import reactive
-from textual.containers import Vertical
-
-
-class BashoComposite(Vertical):
-
-    def compose(self) -> ComposeResult:
-        pass
 
 
 class BashoWidget(Widget):
@@ -25,12 +17,11 @@ class BashoWidget(Widget):
         if self.ydata != {}:
             retv += 4
 
-        if self.ydata.get("yusho", []) != []:
-            retv += (
-                len(self.ydata.get("yusho", []))
-                + 11
-                + len(self.ydata.get("specialPrizes", []))
-            )
+        xdata = len(self.ydata.get("yusho", [])) + len(
+            self.ydata.get("specialPrizes", [])
+        )
+        if xdata > 0:
+            retv += xdata + 5
 
         return retv
 
