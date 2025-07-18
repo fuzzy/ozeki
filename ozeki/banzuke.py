@@ -7,13 +7,8 @@ from rich.panel import Panel
 from rich.console import Group, Console
 from rich import box
 from textual.widget import Widget
-from textual.widgets import Footer
-from textual.app import ComposeResult, App
 from textual.reactive import reactive
 from textual.geometry import Size
-
-# internal
-from ozeki.client import SumoAPI
 
 
 class BanzukeWidget(Widget):
@@ -60,17 +55,9 @@ and I. Supporting them is to support Ozeki.
     ) -> int:
         retv = self.init_d.count("\n") + 2  # Count lines in initial message
 
-        if self.ydata != {}:
-            retv += 4
-
         if self.data.get("east", []):
             retv += 5
             retv += len(self.data["east"])
-
-        if len(self.ydata.get("yusho", [])) > 0:
-            retv += 11
-            for n in self.ydata.get("specialPrizes", []):
-                retv += 1
 
         for n in self.tdata:
             if len(n.get("torikumi", [])) > 0 and n["torikumi"][0].get("day", 0) > 0:
@@ -87,19 +74,6 @@ and I. Supporting them is to support Ozeki.
         # Our default display / splash screen
         if len(self.init_d) > 0 and len(self.data.get("east", [])) == 0:
             widgets.append(Panel(self.init_d, box=box.SIMPLE, expand=False, padding=1))
-
-        # Basho information display
-        if self.ydata != {}:
-            widgets.append(
-                Panel(
-                    Group(
-                        f"[yellow]Start Date[/yellow] [bold]{self.ydata.get('startDate', 'Unknown')}[/bold]",
-                        f"[yellow]End Date[/yellow]   [bold]{self.ydata.get('endDate', 'Unknown')}[/bold]",
-                    ),
-                    box=box.SIMPLE,
-                    expand=True,
-                )
-            )
 
         # Primary banzuke display
         if len(self.data.get("east", [])) > 0:
@@ -164,33 +138,6 @@ and I. Supporting them is to support Ozeki.
                     self._record(wdata.get("record", [])),
                 )
             widgets.append(self.table)
-
-        # yusho and special prizes display
-        if len(self.ydata.get("yusho", [])) > 0:
-            tbl = Table(
-                title="Yusho and Special Prizes",
-                box=box.SIMPLE,
-                expand=True,
-                title_justify="full",
-                show_header=True,
-            )
-            for c in ("Shikona (EN)", "Shikona (JP)", "Yusho", "Special Prizes"):
-                tbl.add_column(c, justify="left")
-            for y in self.ydata.get("yusho", []):
-                tbl.add_row(
-                    y.get("shikonaEn", "UNKNOWN"),
-                    y.get("shikonaJp", "UNKNOWN"),
-                    "[green]" + y.get("type", "UNKNOWN") + "[/green]",
-                    "",
-                )
-            for p in self.ydata.get("specialPrizes", []):
-                tbl.add_row(
-                    p.get("shikonaEn", "UNKNOWN"),
-                    p.get("shikonaJp", "UNKNOWN"),
-                    "",
-                    "[cyan]" + p.get("type", "UNKNOWN") + "[/cyan]",
-                )
-            widgets.append(tbl)
 
         # torikumi displays
         if len(self.tdata) > 0:
