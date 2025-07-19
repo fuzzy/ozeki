@@ -15,8 +15,9 @@ class BanzukeWidget(Widget):
 [yellow]Ozeki[/yellow] - [bold]A data browser for sumo-api.com[/bold]
         
 [bold]1.[/bold] Select the basho date at the top left
-[bold]2.[/bold] Select the division at the bottom left
-[bold]3.[/bold] Browse and enjoy
+[bold]2.[/bold] Select the division at the top middle
+[bold]3.[/bold] Optionally, select a torikumi date at the top right
+[bold]4.[/bold] Browse and enjoy
 
 [yellow]Support[/yellow] ozeki by supporting [cyan][link=https://ko-fi.com/sumoapi]sumo-api.com (click here to open)[/link][/cyan].
 They provide this data anonymously, and [bold]free[/bold] of charge to you
@@ -49,7 +50,7 @@ and I. Supporting them is to support Ozeki.
         self, container: Size, viewport: Size, console: Console
     ) -> int:
         if len(str(self.init_d)) > 10:
-            retv = self.init_d.count("\n") + 2
+            retv = self.init_d.count("\n") + 3
         else:
             retv = 0
 
@@ -57,7 +58,7 @@ and I. Supporting them is to support Ozeki.
             retv += 5
             retv += len(self.data["east"])
 
-        return retv
+        return retv + 2
 
     def render(self) -> None:
         widgets = []

@@ -2,10 +2,11 @@
 import time
 
 # 3rd party
+from textual import on
 from textual.theme import Theme
 from textual.app import App, ComposeResult
 from textual.widgets import ListView, ListItem, Label
-from textual.widgets import Footer
+from textual.widgets import Footer, Collapsible, Select
 from textual.containers import Horizontal, Vertical, VerticalScroll
 
 # Internal
@@ -18,15 +19,16 @@ from .torikumi import TorikumiWidget
 class SumoApp(App):
 
     CSS = """
-Horizontal { background: $surface; }
-Vertical { background: $surface; width: 20; }
-ListView { padding: 1; }
-/* Container */
-VerticalScroll { 
-    width: 5fr; 
-    overflow: auto;
-    background: $surface; 
-    overflow: auto;  /* Better than separate x/y */
+#drop-down {
+    height: 5;
+    background: $surface;
+    width: 100%;
+}
+
+#main-content {
+    width: 100%;
+    height: 1fr;
+    background: $surface;
 }
 
 /* Widget */
@@ -117,6 +119,7 @@ VerticalScroll {
     }
     divisions = ("Makuuchi", "Juryo", "Makushita", "Sandanme", "Jonidan", "Jonokuchi")
     sumo = SumoAPI()
+    _init = True
 
     def action_toggle_theme(self) -> None:
         if self.themes["current"] == "kakejiku-light":
@@ -128,6 +131,8 @@ VerticalScroll {
         self.theme = self.themes["current"]
 
     def on_mount(self) -> None:
+        self.__basho = ""
+        self.__division = ""
         self.register_theme(self.themes["light"])
         self.register_theme(self.themes["dark"])
         self.action_toggle_theme()
@@ -149,38 +154,59 @@ VerticalScroll {
         if len(self.bashos.keys()) == 0:
             self.data_setup()
 
-        with Horizontal(id="main-horiz"):
-            with Vertical(id="side-bar"):
-                keys = list(self.bashos.keys())
-                keys.sort()
-                keys.reverse()
-                yield ListView(
-                    *[ListItem(Label(self.bashos[k]), id=f"n_{k}") for k in keys],
-                    id="bashos",
-                )
-                yield ListView(
-                    *[ListItem(Label(n), id=n) for n in self.divisions], id="divisions"
-                )
-            yield VerticalScroll(
-                BashoWidget(id="basho"),
-                BanzukeWidget(id="banzuke"),
-                TorikumiWidget(id="torikumi"),
+        with Horizontal(id="drop-down"):
+            years = list(self.bashos.keys())
+            years.sort()
+            years.reverse()
+            yield Select(
+                ((self.bashos[year], str(year)) for year in years),
+                prompt="Select Basho",
+                id="bashos",
             )
-            yield Footer()
+            yield Select(
+                ((div, div) for div in self.divisions),
+                prompt="Select Division",
+                id="divisions",
+            )
+            yield Select(
+                ((f"Day #{day:02d}", str(day)) for day in range(1, 16)),
+                prompt="Select Torikumi Day",
+            )
 
-    def on_list_view_selected(self, event: ListView.Selected) -> None:
-        w_basho = self.query_one("#bashos")
-        w_divi = self.query_one("#divisions")
-        basho = w_basho.children[w_basho.index].id.split("_")[1]
-        divi = w_divi.children[w_divi.index].id
-        basho_w = self.query_one(BashoWidget)
-        banzuke_w = self.query_one(BanzukeWidget)
-        torikumi_w = self.query_one(TorikumiWidget)
+        with VerticalScroll(id="main-content"):
+            yield BashoWidget(id="basho")
+            yield BanzukeWidget(id="banzuke")
+            yield TorikumiWidget(id="torikumi")
+        yield Footer()
 
-        banzuke_w.init_d = ""
-        basho_w.ydata = self.sumo.basho(basho)
-        banzuke_w.data = self.sumo.banzuke(basho, divi)
-        torikumi = []
-        for n in range(1, 16):
-            torikumi.append(self.sumo.torikumi(basho, divi, n))
-        torikumi_w.tdata = torikumi
+    @on(Select.Changed)
+    def select_changed(self, event: Select.Changed) -> None:
+        d_banzu = self.query_one(BanzukeWidget)
+        d_basho = self.query_one(BashoWidget)
+        d_torik = self.query_one(TorikumiWidget)
+
+        reset = False
+        if event.select.id == "bashos":
+            self.__basho = event.value
+            reset = True
+        elif event.select.id == "divisions":
+            self.__division = event.value
+            reset = True
+
+        if len(str(self.__basho)) < 1 or len(str(self.__division)) < 1:
+            return
+
+        if len(str(self.__basho)) > 0 and len(str(self.__division)) > 0 and reset:
+            d_torik.tdata = {}
+            d_banzu.init_d = ""
+            d_basho.ydata = self.sumo.basho(self.__basho)
+            d_banzu.data = self.sumo.banzuke(self.__basho, self.__division)
+            reset = False
+        elif len(str(self.__basho)) > 0 and len(str(self.__division)) > 0 and not reset:
+            d_banzu.init_d = ""
+            d_banzu.data = {}
+            d_basho.ydata = {}
+            d_torik.tdata = self.sumo.torikumi(
+                self.__basho, self.__division, event.value
+            )
+            reset = True
