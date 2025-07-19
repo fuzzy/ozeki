@@ -45,5 +45,5 @@ $ ozeki
 [oni]: themes/ozeki-oni.png
 [maneki-neko]: themes/ozeki-maneki-neko.png
 [kami]: themes/ozeki-kami.png
-[asciicast]: https://asciinema.org/a/c6FqgOEok3fWlEyL6JwmTfvoh.svg
-[asciinima]: https://asciinema.org/a/c6FqgOEok3fWlEyL6JwmTfvoh
+[asciicast]: https://asciinema.org/a/hJeWx4vjtfJkv2BUbR0sqf9f4.svg
+[asciinima]: https://asciinema.org/a/hJeWx4vjtfJkv2BUbR0sqf9f4
