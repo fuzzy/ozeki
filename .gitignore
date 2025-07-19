@@ -4,3 +4,4 @@ build/
 req-*.json
 *.debug
 *.core
+*__pycache__*
