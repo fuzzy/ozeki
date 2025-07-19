@@ -32,10 +32,18 @@ $ ozeki
 
 ## Themes
 
-![dark mode][dark]
-![light mode][light]
+![dark theme][dark]
+![light theme][light]
+![sakura theme][sakura]
+![oni theme][oni]
+![maneki-neko theme][maneki-neko]
+![kami theme][kami]
 
-[dark]: ozeki-dark.png
-[light]: ozeki-light.png
+[dark]: themes/ozeki-dark.png
+[light]: themes/ozeki-light.png
+[sakura]: themes/ozeki-sakura.png
+[oni]: themes/ozeki-oni.png
+[maneki-neko]: themes/ozeki-maneki-neko.png
+[kami]: themes/ozeki-kami.png
 [asciicast]: https://asciinema.org/a/c6FqgOEok3fWlEyL6JwmTfvoh.svg
 [asciinima]: https://asciinema.org/a/c6FqgOEok3fWlEyL6JwmTfvoh

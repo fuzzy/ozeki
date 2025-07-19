@@ -53,7 +53,7 @@ THEMES = cycle(
             ),
         },
         {
-            "name": "sakura-new",
+            "name": "sakura",
             "theme": Theme(
                 name="sakura",
                 primary="#3a1c2b",  # Darker plum (near-black for max contrast)
@@ -97,6 +97,54 @@ THEMES = cycle(
                     "input-selection-background": "#4169e1 40%",  # Blue highlight
                     "highlight-foreground": "#0f1a1f",  # Dark bg for contrast
                     "highlight-background": "#2e8b57",  # Oni green
+                },
+            ),
+        },
+        {
+            "name": "maneki-neko",
+            "theme": Theme(
+                name="maneki-neko",
+                primary="#000000",  # Black (text, like the cat's bold outlines)
+                secondary="#cc0033",  # Lucky red (collar/bells)
+                accent="#ffd700",  # Gold (paws/coins)
+                foreground="#000000",  # Black text for clarity
+                background="#ffffff",  # White (cat's fur)
+                success="#4caf50",  # Green (prosperity)
+                warning="#ff9800",  # Orange (energy)
+                error="#f44336",  # Bright red (alert)
+                surface="#f5f5f5",  # Off-white (soft fur texture)
+                panel="#ffeb3b",  # Light gold (accent panels)
+                dark=False,  # Light theme
+                variables={
+                    "block-cursor-text-style": "bold",
+                    "footer-key-foreground": "#e60033",  # Lucky red
+                    "input-selection-background": "#ffd700 40%",  # Gold highlight
+                    "highlight-foreground": "#000000",  # Black text
+                    "highlight-background": "#fff9c4",  # Pale gold (paw pads)
+                },
+            ),
+        },
+        {
+            "name": "kami",
+            "theme": Theme(
+                name="kami-dark",
+                primary="#e0f7fa",  # Ethereal ice (text, like shrine paper)
+                secondary="#4db6ac",  # Sacred teal (torii gates)
+                accent="#ffca28",  # Gold (offerings, divine light)
+                foreground="#e0f7fa",  # Bright text
+                background="#001a12",  # Deep aquamarine (ocean abyss)
+                success="#81c784",  # Moss green (nature’s balance)
+                warning="#ffb74d",  # Sunset orange (divine warnings)
+                error="#ef5350",  # Vermilion (sacred alert)
+                surface="#001a12",  # Richer aquamarine (temple walls)
+                panel="#004d40",  # Darker teal (altar panels)
+                dark=True,
+                variables={
+                    "block-cursor-text-style": "bold",
+                    "footer-key-foreground": "#ffca28",  # Gold keys
+                    "input-selection-background": "#4db6ac 40%",  # Teal highlight
+                    "highlight-foreground": "#003d33",  # Dark bg on highlight
+                    "highlight-background": "#ffca28",  # Gold highlight
                 },
             ),
         },
