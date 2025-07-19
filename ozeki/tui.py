@@ -3,14 +3,13 @@ import time
 
 # 3rd party
 from textual import on
-from textual.theme import Theme
 from textual.app import App, ComposeResult
-from textual.widgets import ListView, ListItem, Label
-from textual.widgets import Footer, Collapsible, Select
-from textual.containers import Horizontal, Vertical, VerticalScroll
+from textual.widgets import Footer, Select
+from textual.containers import Horizontal, VerticalScroll
 
 # Internal
 from .client import SumoAPI
+from .themes import THEMES
 from .basho import BashoWidget
 from .banzuke import BanzukeWidget
 from .torikumi import TorikumiWidget
@@ -59,55 +58,10 @@ class SumoApp(App):
 """
     BINDINGS = [
         ("ctrl+q", "quit", "Quit"),
-        ("ctrl+t", "toggle_theme", "Toggle light/dark mode"),
+        ("ctrl+t", "cycle_theme", "Cycle Theme"),
     ]
 
-    themes = {
-        "current": "kakejiku-light",
-        "light": Theme(
-            name="kakejiku-light",
-            primary="#1a1a1a",  # Sumi black (main text)
-            secondary="#8b0000",  # Vermilion ink (accents, stamps)
-            accent="#c19a6b",  # Muted gold (highlight or focal elements)
-            foreground="#1a1a1a",  # Deep ink tone
-            background="#f8f4e3",  # Washi paper base
-            success="#6b8e23",  # Olive green (natural, understated)
-            warning="#b5651d",  # Earthy orange (subtle contrast)
-            error="#990000",  # Dark red (without overwhelming)
-            surface="#ede6d0",  # Scroll body (slightly off-washi)
-            panel="#dcd2b2",  # Borders or side panels (gold-tan trim)
-            dark=False,
-            variables={
-                "block-cursor-text-style": "none",
-                "footer-key-foreground": "#8b0000",  # Red accent
-                "input-selection-background": "#c19a6b 35%",
-                "highlight-foreground": "#c19a6b",
-                "highlight-background": "#f0e8cc",
-            },
-        ),
-        "dark": Theme(
-            name="kakejiku-dark",
-            primary="#e0c07d",  # Gold script ink (primary accent)
-            secondary="#a93f2e",  # Deep vermilion (seals, alerts)
-            accent="#82664a",  # Aged bronze (secondary highlight)
-            foreground="#e8e6dc",  # Pale ink on dark scroll
-            background="#1a1a1a",  # Lacquer-black base
-            success="#6f9f6a",  # Subtle green (nature balance)
-            warning="#d19a66",  # Burnt orange
-            error="#a93434",  # Dried crimson ink
-            surface="#2a2a2a",  # Scroll body
-            panel="#33302a",  # Faintly warm dark background
-            dark=True,
-            variables={
-                "block-cursor-text-style": "bold",
-                "footer-key-foreground": "#e0c07d",
-                "input-selection-background": "#a93f2e 30%",
-                "highlight-foreground": "#e0c07d",
-                "highlight-background": "#2f2c26",
-            },
-        ),
-    }
-
+    themes = THEMES
     bashos = {}
     months = {
         1: "January",
@@ -121,21 +75,21 @@ class SumoApp(App):
     sumo = SumoAPI()
     _init = True
 
-    def action_toggle_theme(self) -> None:
-        if self.themes["current"] == "kakejiku-light":
-            self.themes["current"] = "kakejiku-dark"
-        elif self.themes["current"] == "kakejiku-dark":
-            self.themes["current"] = "kakejiku-light"
-        else:
-            self.themes["current"] = "kakejiku-light"
-        self.theme = self.themes["current"]
+    def action_cycle_theme(self) -> None:
+        self.theme = next(self.themes)["theme"].name
 
     def on_mount(self) -> None:
         self.__basho = ""
         self.__division = ""
-        self.register_theme(self.themes["light"])
-        self.register_theme(self.themes["dark"])
-        self.action_toggle_theme()
+        ftheme = next(self.themes)
+        self.register_theme(ftheme["theme"])
+        while True:
+            ntheme = next(self.themes)
+            if ntheme["theme"].name != ftheme["theme"].name:
+                self.register_theme(ntheme["theme"])
+            else:
+                break
+        self.theme = ftheme["theme"].name
 
     def data_setup(self) -> None:
         self.bashos = {}
