@@ -1,5 +1,6 @@
 # Stdlib
 import time
+from threading import Thread
 
 # 3rd party
 from textual import on
@@ -59,6 +60,7 @@ class SumoApp(App):
     BINDINGS = [
         ("ctrl+q", "quit", "Quit"),
         ("ctrl+t", "cycle_theme", "Cycle Theme"),
+        ("ctrl+b", "background_updates", "Toggle Background Updates"),
     ]
 
     themes = THEMES
@@ -74,9 +76,46 @@ class SumoApp(App):
     divisions = ("Makuuchi", "Juryo", "Makushita", "Sandanme", "Jonidan", "Jonokuchi")
     sumo = SumoAPI()
     _init = True
+    _t_thread = False
 
     def action_cycle_theme(self) -> None:
         self.theme = next(self.themes)["theme"].name
+
+    def action_background_updates(self) -> None:
+        if self._t_thread:
+            self._t_thread = False
+            return
+        self._t_thread = True
+        Thread(target=self._update_thread, daemon=True).start()
+
+    def _update_thread(self) -> None:
+        while self._t_thread:
+            i_basho = self.query_one("#basho_s", Select).selection
+            i_divis = self.query_one("#division_s", Select).selection
+            i_torik = self.query_one("#torikumi_s", Select).selection
+            d_banzu = self.query_one(BanzukeWidget)
+            d_basho = self.query_one(BashoWidget)
+            d_torik = self.query_one(TorikumiWidget)
+
+            if i_torik is None:
+                d_torik.tdata = {}
+                d_banzu.init_d = ""
+                d_basho.ydata = self.sumo.basho(i_basho, 1)
+                d_banzu.data = self.sumo.banzuke(i_basho, i_divis, 1)
+                d_basho.refresh(layout=True)
+                d_banzu.refresh(layout=True)
+                d_banzu.parent.refresh(layout=True)
+            else:
+                d_banzu.init_d = ""
+                d_banzu.data = {}
+                d_basho.ydata = {}
+                d_torik.tdata = self.sumo.torikumi(i_basho, i_divis, i_torik, 1)
+                d_torik.refresh(layout=True)
+                d_torik.parent.refresh(layout=True)
+            for _ in range(13):
+                if not self._t_thread:
+                    return
+                time.sleep(5)
 
     def on_mount(self) -> None:
         self.__basho = ""
@@ -115,16 +154,17 @@ class SumoApp(App):
             yield Select(
                 ((self.bashos[year], str(year)) for year in years),
                 prompt="Select Basho",
-                id="bashos",
+                id="basho_s",
             )
             yield Select(
                 ((div, div) for div in self.divisions),
                 prompt="Select Division",
-                id="divisions",
+                id="division_s",
             )
             yield Select(
                 ((f"Day #{day:02d}", str(day)) for day in range(1, 16)),
                 prompt="Select Torikumi Day",
+                id="torikumi_s",
             )
 
         with VerticalScroll(id="main-content"):
@@ -139,11 +179,12 @@ class SumoApp(App):
         d_basho = self.query_one(BashoWidget)
         d_torik = self.query_one(TorikumiWidget)
 
+        self._t_thread = False
         reset = False
-        if event.select.id == "bashos":
+        if event.select.id == "basho_s":
             self.__basho = event.value
             reset = True
-        elif event.select.id == "divisions":
+        elif event.select.id == "division_s":
             self.__division = event.value
             reset = True
 

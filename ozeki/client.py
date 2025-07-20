@@ -25,10 +25,10 @@ class SumoAPI:
         except Exception as e:
             raise RuntimeError(f"Failed to GET {url}: {e}")
 
-    def _cache(self, fn, uri):
+    def _cache(self, fn, uri, ttl=60):
         if os.path.isfile(fn):
             mtime = datetime.fromtimestamp(os.path.getmtime(fn))
-            if datetime.now() - mtime < timedelta(hours=1):
+            if datetime.now() - mtime < timedelta(minutes=ttl):
                 return json.loads(open(fn, "r").read())
 
         retv = self._get(uri)
@@ -38,43 +38,48 @@ class SumoAPI:
             fp.write(json.dumps(retv, default=str, indent=2))
         return retv
 
-    def rikishis(self):
-        return self._cache(f"{self.CACHE_DIR}/rikishis.json", "/rikishis")
+    def rikishis(self, ttl=60):
+        return self._cache(f"{self.CACHE_DIR}/rikishis.json", "/rikishis", ttl=ttl)
 
-    def rikishi(self, rikishi_id):
+    def rikishi(self, rikishi_id, ttl=60):
         return self._cache(
             f"{self.CACHE_DIR}/rikishi/{rikishi_id}/rikihsi.json",
             f"/rikishi/{rikishi_id}",
+            ttl=ttl,
         )
 
-    def rikishi_stats(self, rikishi_id):
+    def rikishi_stats(self, rikishi_id, ttl=60):
         return self._cache(
             f"{self.CACHE_DIR}/rikishi/{rikishi_id}/stats.json",
             f"/rikishi/{rikishi_id}/stats",
+            ttl=ttl,
         )
 
-    def rikishi_matches(self, rikishi_id):
+    def rikishi_matches(self, rikishi_id, ttl=60):
         return self._cache(
             f"{self.CACHE_DIR}/rikishi/{rikishi_id}/matches.json",
             f"/rikishi/{rikishi_id}/matches",
+            ttl=ttl,
         )
 
-    def basho(self, basho_id):
+    def basho(self, basho_id, ttl=60):
         return self._cache(
-            f"{self.CACHE_DIR}/basho_{basho_id}.json", f"/basho/{basho_id}"
+            f"{self.CACHE_DIR}/basho_{basho_id}.json", f"/basho/{basho_id}", ttl=ttl
         )
 
-    def banzuke(self, basho_id, division):
+    def banzuke(self, basho_id, division, ttl=60):
         return self._cache(
             f"{self.CACHE_DIR}/basho/{basho_id}/banzuke_{division}.json",
             f"/basho/{basho_id}/banzuke/{division}",
+            ttl=ttl,
         )
 
-    def torikumi(self, basho_id, division, day):
+    def torikumi(self, basho_id, division, day, ttl=60):
         try:
             return self._cache(
                 f"{self.CACHE_DIR}/basho/{basho_id}/torikumi/{division}/{day}.json",
                 f"/basho/{basho_id}/torikumi/{division}/{day}",
+                ttl=ttl,
             )
         except Exception:
             return {}
