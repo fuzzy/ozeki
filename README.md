@@ -7,7 +7,7 @@ and torikumi data.
 ## Features
 
 - [X] Basho view (Banzuke and Torikumi widgets)
-- [ ] Optional background updates / Live view
+- [X] Optional background updates / Live view
 - [ ] Rikishi query and deep-dive stats interfaces
 - [ ] User modifiable/supplied themes
 
