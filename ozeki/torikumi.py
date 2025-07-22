@@ -63,10 +63,13 @@ class TorikumiWidget(Widget):
                     east = f"[green]{n.get('eastShikona', 'UNKNOWN')}[/green]"
                     west = f"[red]{n.get('westShikona', 'UNKNOWN')}[/red]"
                     eflag = "🏅"
-                else:
+                elif n.get("winnerId", True) == n.get("eastId", True):
                     east = f"[red]{n.get('eastShikona', 'UNKNONW')}[/red]"
                     west = f"[green]{n.get('westShikona', 'UNKNOWN')}[/green]"
                     wflag = "🏅"
+                elif n.get("winnerId", True) == n.get("eastId", True):
+                    east = f"[yellow]{n.get('eastShikona', 'UNKNONW')}[/yellow]"
+                    west = f"[yellow]{n.get('westShikona', 'UNKNOWN')}[/yellow]"
 
                 day.add_row(
                     eflag,
