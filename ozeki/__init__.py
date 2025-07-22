@@ -1,6 +1,6 @@
-from .tui import SumoApp
+from .tui import Ozeki
 
 
 def main():
-    app = SumoApp()
+    app = Ozeki()
     app.run()

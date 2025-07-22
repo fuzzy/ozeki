@@ -1,11 +1,12 @@
 # Stdlib
+import os
 import time
 from threading import Thread
 
 # 3rd party
 from textual import on
 from textual.app import App, ComposeResult
-from textual.widgets import Footer, Select
+from textual.widgets import Footer, Select, Header
 from textual.containers import Horizontal, VerticalScroll
 
 # Internal
@@ -16,7 +17,7 @@ from .banzuke import BanzukeWidget
 from .torikumi import TorikumiWidget
 
 
-class SumoApp(App):
+class Ozeki(App):
 
     CSS = """
 #drop-down {
@@ -80,6 +81,8 @@ class SumoApp(App):
 
     def action_cycle_theme(self) -> None:
         self.theme = next(self.themes)["theme"].name
+        with open(f"{os.getenv('HOME', '~')}/.ozeki", "w+") as fp:
+            fp.write(self.theme)
 
     def action_background_updates(self) -> None:
         if self._t_thread:
@@ -121,13 +124,22 @@ class SumoApp(App):
         self.__basho = ""
         self.__division = ""
         ftheme = next(self.themes)
-        self.register_theme(ftheme["theme"])
+        if os.path.exists(f"{os.getenv('HOME', '~')}/.ozeki"):
+            with open(f"{os.getenv('HOME', '~')}/.ozeki", "r") as fp:
+                theme_name = fp.read().strip()
+                for theme in THEMES:
+                    if theme["theme"].name == theme_name:
+                        ftheme = theme
+                        self.register_theme(ftheme["theme"])
+                        break
         while True:
             ntheme = next(self.themes)
             if ntheme["theme"].name != ftheme["theme"].name:
                 self.register_theme(ntheme["theme"])
             else:
+                ftheme = ntheme
                 break
+        self.register_theme(ftheme["theme"])
         self.theme = ftheme["theme"].name
 
     def data_setup(self) -> None:
@@ -146,6 +158,8 @@ class SumoApp(App):
     def compose(self) -> ComposeResult:
         if len(self.bashos.keys()) == 0:
             self.data_setup()
+
+        yield Header(name="Ozeki", id="header", icon="🌸", show_clock=True)
 
         with Horizontal(id="drop-down"):
             years = list(self.bashos.keys())

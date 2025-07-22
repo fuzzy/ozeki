@@ -7,7 +7,7 @@ THEMES = cycle(
         {
             "name": "light",
             "theme": Theme(
-                name="kakejiku-light",
+                name="ozeki-light",
                 primary="#1a1a1a",  # Sumi black (main text)
                 secondary="#8b0000",  # Vermilion ink (accents, stamps)
                 accent="#c19a6b",  # Muted gold (highlight or focal elements)
@@ -31,7 +31,7 @@ THEMES = cycle(
         {
             "name": "dark",
             "theme": Theme(
-                name="kakejiku-dark",
+                name="ozeki-dark",
                 primary="#e0c07d",  # Gold script ink (primary accent)
                 secondary="#a93f2e",  # Deep vermilion (seals, alerts)
                 accent="#82664a",  # Aged bronze (secondary highlight)
@@ -53,9 +53,9 @@ THEMES = cycle(
             ),
         },
         {
-            "name": "sakura",
+            "name": "ozeki-sakura",
             "theme": Theme(
-                name="sakura",
+                name="ozeki-sakura",
                 primary="#3a1c2b",  # Darker plum (near-black for max contrast)
                 secondary="#d44d7a",  # Vibrant sakura pink (better pop)
                 accent="#c97b95",  # Muted but clearer pink
@@ -79,7 +79,7 @@ THEMES = cycle(
         {
             "name": "oni",
             "theme": Theme(
-                name="oni",
+                name="ozeki-oni",
                 primary="#e8f3f8",  # Pale ice/ghostly light (text)
                 secondary="#2e8b57",  # Oni green (accent)
                 accent="#4169e1",  # Royal blue (oni costume highlights)
@@ -103,7 +103,7 @@ THEMES = cycle(
         {
             "name": "maneki-neko",
             "theme": Theme(
-                name="maneki-neko",
+                name="ozeki-maneki-neko",
                 primary="#000000",  # Black (text, like the cat's bold outlines)
                 secondary="#cc0033",  # Lucky red (collar/bells)
                 accent="#ffd700",  # Gold (paws/coins)
@@ -127,7 +127,7 @@ THEMES = cycle(
         {
             "name": "kami",
             "theme": Theme(
-                name="kami-dark",
+                name="ozeki-kami",
                 primary="#e0f7fa",  # Ethereal ice (text, like shrine paper)
                 secondary="#4db6ac",  # Sacred teal (torii gates)
                 accent="#ffca28",  # Gold (offerings, divine light)
