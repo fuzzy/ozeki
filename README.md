@@ -8,8 +8,9 @@ and torikumi data.
 
 - [X] Basho view (Banzuke and Torikumi widgets)
 - [X] Optional background updates / Live view
-- [ ] Rikishi query and deep-dive stats interfaces
+- [X] Persistence of selected theme
 - [ ] User modifiable/supplied themes
+- [ ] Rikishi query and deep-dive stats interfaces
 
 ## See it in action
 
