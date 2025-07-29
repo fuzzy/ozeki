@@ -1,0 +1,126 @@
+---
+profiles:
+  example:
+    name: SumoAPI
+    data:
+      host: https://sumo-api.com/api
+      rikishi_id: 3
+      opponent_id: 5
+      basho_id: 202507
+      division_id: Juryo
+      day_id: 3
+      kimarite_id: dashinage
+
+requests:
+  
+  rikishi_endpoints: !folder
+    name: Rikishi Endpoints
+    requests:
+      
+      rikishis: !request
+        name: GET /rikishis
+        method: GET
+        url: "{{host}}/rikishis"
+        query:
+          - shikonaEn=
+          - heya=
+          - nskId=
+          - intai=
+          - measurements=true
+          - ranks=true
+          - shikonas=true
+          - skip=
+
+      rikishi: !request
+        name: GET /rikishi/:rikishiId
+        method: GET
+        url: "{{host}}/rikishi/{{rikishi_id}}"
+        query:
+          - measurements=true
+          - ranks=true
+          - shikonas=true
+
+      rikishi_stats: !request
+        name: GET /rikishi/:rikishiId/stats
+        method: GET
+        url: "{{host}}/rikishi/{{rikishi_id}}/stats"
+
+      rikishi_matches: !request
+        name: GET /rikishi/:rikishiId/matches
+        method: GET
+        url: "{{host}}/rikishi/{{rikishi_id}}/matches"
+        query:
+          - bashoId=
+
+      rikishi_rivalry: !request
+        name: GET /rikishi/:rikishiId/matches/:opponentId
+        method: GET
+        url: "{{host}}/rikishi/{{rikishi_id}}/matches/{{opponent_id}}"
+        query:
+          - bashoId=
+
+  basho_endpoints: !folder
+    name: Basho Endpoints
+    requests:
+        
+      basho: !request
+        name: GET /basho/:bashoId
+        method: GET
+        url: "{{host}}/basho/{{basho_id}}"
+
+      basho_banzuke: !request
+        name: GET /basho/:bashoId/banzuke/:division
+        method: GET
+        url: "{{host}}/basho/{{basho_id}}/banzuke/{{division_id}}"
+
+      basho_torikumi: !request
+        name: GET /basho/:bashoId/torikumi/:divisionId/:day
+        method: GET
+        url: "{{host}}/basho/{{basho_id}}/torikumi/{{division_id}}/{{day_id}}"
+
+  kimarite_endpoints: !folder
+    name: Kimarite Endpoints
+    requests:
+
+      kimarite: !request
+        name: GET /kimarite
+        method: GET
+        url: "{{host}}/kimarite"
+        query:
+          - sortField=kimarite
+          - skip=
+
+      kimarites: !request
+        name: GET /kimarite/:kimariteId
+        method: GET
+        url: "{{host}}/kimarite/{{kimarite_id}}"
+        query:
+          - skip=
+
+  misc_endpoints: !folder
+    name: Miscellaneous Endpoints
+    requests:
+
+      measurements: !request
+        name: GET /measurements
+        method: GET
+        url: "{{host}}/measurements"
+        query:
+          - rikishiId={{rikishi_id}}
+          - bashoId={{basho_id}}
+
+      ranks: !request
+        name: GET /ranks
+        method: GET
+        url: "{{host}}/ranks"
+        query:
+          - rikishiId={{rikishi_id}}
+          - bashoId={{basho_id}}
+
+      shikonas: !request
+        name: GET /shikonas
+        method: GET
+        url: "{{host}}/shikonas"
+        query:
+          - rikishiId={{rikishi_id}}
+          - bashoId={{basho_id}}
