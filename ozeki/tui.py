@@ -15,6 +15,7 @@ from .themes import THEMES
 from .basho import BashoWidget
 from .banzuke import BanzukeWidget
 from .torikumi import TorikumiWidget
+from .rikishi import RikishiScreen
 
 
 class Ozeki(App):
@@ -61,6 +62,7 @@ class Ozeki(App):
     BINDINGS = [
         ("ctrl+q", "quit", "Quit"),
         ("ctrl+t", "cycle_theme", "Cycle Theme"),
+        ("ctrl+r", "rikishi_lookup", "Rikishi Lookup"),
         ("ctrl+b", "background_updates", "Toggle Background Updates"),
     ]
 
@@ -83,6 +85,9 @@ class Ozeki(App):
         self.theme = next(self.themes)["theme"].name
         with open(f"{os.getenv('HOME', '~')}/.ozeki", "w+") as fp:
             fp.write(self.theme)
+
+    def action_rikishi_lookup(self) -> None:
+        self.app.push_screen(RikishiScreen())
 
     def action_background_updates(self) -> None:
         if self._t_thread:

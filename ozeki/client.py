@@ -25,13 +25,13 @@ class SumoAPI:
         except Exception as e:
             raise RuntimeError(f"Failed to GET {url}: {e}")
 
-    def _cache(self, fn, uri, ttl=60):
+    def _cache(self, fn, uri, query=None, ttl=60):
         if os.path.isfile(fn):
             mtime = datetime.fromtimestamp(os.path.getmtime(fn))
             if datetime.now() - mtime < timedelta(minutes=ttl):
                 return json.loads(open(fn, "r").read())
 
-        retv = self._get(uri)
+        retv = self._get(uri, params=query)
         if not os.path.isdir(os.path.dirname(fn)):
             os.makedirs(os.path.dirname(fn))
         with open(fn, "w+") as fp:
@@ -45,6 +45,20 @@ class SumoAPI:
         return self._cache(
             f"{self.CACHE_DIR}/rikishi/{rikishi_id}/rikihsi.json",
             f"/rikishi/{rikishi_id}",
+            ttl=ttl,
+        )
+
+    def rikishi_by_name(self, rikishi_name, ttl=60):
+        return self._cache(
+            f"{self.CACHE_DIR}/rikishi/{rikishi_name}.json",
+            "/rikishis",
+            query={
+                "shikonaEn": rikishi_name,
+                "measurements": "true",
+                "ranks": "true",
+                # "shikonas": "true",
+                "intai": "true",
+            },
             ttl=ttl,
         )
 
