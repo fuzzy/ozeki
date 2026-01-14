@@ -149,7 +149,7 @@ class Ozeki(App):
 
     def data_setup(self) -> None:
         self.bashos = {}
-        for year in range(1960, 2026):
+        for year in range(1960, 2036):
             for month in (1, 3, 5, 7, 9, 11):
                 if year < time.gmtime().tm_year:
                     self.bashos[f"{year}{month:02d}"] = (
