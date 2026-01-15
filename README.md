@@ -4,6 +4,10 @@ Ozeki is a TUI data browser for [sumo-api.com](https://ko-fi.com/sumoapi) allowi
 It's UI layout is in a bit of flux at the moment, but is build around a set of custom [Textual]() widgets for displaying banzuke
 and torikumi data.
 
+Ozeki® is a registered trademark of the Ozeki Sake Company, founded in 1711, for its world-renowned sake. This software project
+is not affiliated with, endorsed by, or connected to that historic company. The name "Ozeki" is used here strictly in reference
+to the rank in professional sumo, a sport with it's own deep and revered tradition.
+
 ## Features
 
 - [X] Basho view (Banzuke and Torikumi widgets)
